@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+    <color name="gray">#D9D9D9</color>
+    <color name="white">#ffffff</color>
+    <color name="time_bg_color">#F5F5F5</color>
+    <color name="timer_number_color">#F75A59</color>
+</resources>
