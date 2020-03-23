@@ -9,8 +9,6 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
-import android.os.Vibrator;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -22,29 +20,15 @@ import android.widget.TextView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+public class AudioPlayView extends Dialog implements  View.OnClickListener, ClassInfoLrcView.MedCallBack {
 
-public class AudioChildContentView extends Dialog implements  View.OnClickListener, ClassInfoLrcView.MedCallBack {
-
-    private LinearLayout mClassInfoSubtitleView;
     private TextView mClassInfoTitle;
     private TextView mClassInfoChildTitle;
-    private TextView mClassInfoSubtitle1;
-    private TextView mClassInfoSubtitle2;
-    private TextView mClassInfoSubtitle3;
     private TextView mClassInfoTimerNumber;
     private static TextView mTimer_close;
     private static TextView mtimer_cancle;
@@ -67,7 +51,7 @@ public class AudioChildContentView extends Dialog implements  View.OnClickListen
     private static SeekBar mClassInfoPlaySeekbar;
     private static TextView mClassInfoAlreadyPlayedTime;
     private static TextView mClassInfoTotalTime;
-    private static AudioChildContentView dialog;
+    private static AudioPlayView dialog;
 
     private static BottomSheetDialog mTimerDialog;
     private CountDownTimer mTimerCountDown;
@@ -81,11 +65,9 @@ public class AudioChildContentView extends Dialog implements  View.OnClickListen
     private Thread mThread;
     private boolean mIsPlaying = true;
 
-    private List<Long> timeList = new ArrayList<>();
-    private List<String> contentList = new ArrayList<>();
     private LrcRows lrcRows=new LrcRows();
 
-    public AudioChildContentView(Context context){
+    public AudioPlayView(Context context){
         super(context);
     }
 
@@ -107,7 +89,7 @@ public class AudioChildContentView extends Dialog implements  View.OnClickListen
         mMediaPlayer = mediaPlayer;
         mContext = context;
         if(dialog == null){
-            dialog = new AudioChildContentView(context);
+            dialog = new AudioPlayView(context);
         }
         dialog.show();
         Window window = dialog.getWindow();
@@ -233,6 +215,7 @@ public class AudioChildContentView extends Dialog implements  View.OnClickListen
             case R.id.class_info_collection:
                 break;
             case R.id.class_info_share:
+                mContext.startActivity(new Intent(mContext,ShareActivity.class));
                 break;
             case R.id.class_info_shock:
 //                Vibrator vibrator = (Vibrator)mContext.getSystemService(mContext.VIBRATOR_SERVICE);

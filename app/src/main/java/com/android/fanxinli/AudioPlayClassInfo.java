@@ -3,7 +3,7 @@ package com.android.fanxinli;
 import java.io.Serializable;
 import java.util.List;
 
-public class ClassInfo implements Serializable {
+public class AudioPlayClassInfo implements Serializable {
 
     private boolean isVip;
     private String imgUrl;

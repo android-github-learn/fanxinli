@@ -15,7 +15,7 @@
         app:layout_constraintRight_toRightOf="parent"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/share_img"
+        android:id="@+id/share_img_layout"
         android:layout_width="match_parent"
         android:layout_height="400dp"
         android:layout_marginRight="40dp"
@@ -106,14 +106,13 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <GridLayout
+    <GridView
         android:id="@+id/share_img_grid"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="150dp"
         android:numColumns = "3"
         android:columnWidth="40dp"
-        android:verticalSpacing="50dp"
-        android:layout_gravity="center"
+        android:verticalSpacing="30dp"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
         android:layout_marginBottom="30dp"
