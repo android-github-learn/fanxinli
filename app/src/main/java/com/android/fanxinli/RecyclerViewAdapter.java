@@ -51,7 +51,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
             @Override
             public void onClick(View view) {
                 if(mItemClickListener != null){
-                    mItemClickListener.onItemClick(position);
+                    mItemClickListener.onItemClick(position,viewHolder);
                 }
             }
         });
@@ -63,13 +63,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private ImageView play_status;
+        public ImageView play_status;
         private TextView class_name;
         private TextView class_time;
         private ProgressBar class_progress;
         private TextView class_progress_number;
         private ConstraintLayout class_constrainLayoutInfo;
-        private ItemClickListener mListener;
         public ViewHolder(View itemView) {
             super(itemView);
             play_status = itemView.findViewById(R.id.class_play_status);
@@ -82,7 +81,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
     }
 
     public interface ItemClickListener {
-        public void onItemClick(int postion);
+        public void onItemClick(int postion,ViewHolder viewHolder);
     }
 
     public interface CollectClickListener {

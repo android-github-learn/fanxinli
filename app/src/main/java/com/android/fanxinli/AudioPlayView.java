@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -19,6 +20,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -62,8 +65,8 @@ public class AudioPlayView extends Dialog implements  View.OnClickListener, Clas
     private static MediaPlayer mMediaPlayer;
     private int mCurrentPlayPosition = -1;
     public static int AUDIO_PLAY_BACK_FORWARD_NUMBER = 15000;
-    private Thread mThread;
-    private boolean mIsPlaying = true;
+    private static Thread mThread;
+    private static boolean mIsPlaying = true;
 
     private LrcRows lrcRows=new LrcRows();
 
@@ -88,6 +91,10 @@ public class AudioPlayView extends Dialog implements  View.OnClickListener, Clas
         mChildClassInfo = childClassInfo;
         mMediaPlayer = mediaPlayer;
         mContext = context;
+        mIsPlaying = true;
+        if(mThread != null && !mThread.isAlive()){
+            mThread.start();
+        }
         if(dialog == null){
             dialog = new AudioPlayView(context);
         }
@@ -108,7 +115,12 @@ public class AudioPlayView extends Dialog implements  View.OnClickListener, Clas
         mClassInfoAlreadyPlayedTime.setText(Utils.calculateTime(position));
         mClassInfoTotalTime.setText(Utils.calculateTime(duration2));
         mClassInfoPlaySeekbar.setMax(duration2);
+    }
 
+    public static void notifyUI(ChildClassInfo childClassInfo, MediaPlayer mediaPlayer){
+        Log.i("guochunhong","AudioPlayView notifyUI....... ");
+        mChildClassInfo = childClassInfo;
+        mMediaPlayer = mediaPlayer;
     }
 
     @Override
@@ -190,7 +202,15 @@ public class AudioPlayView extends Dialog implements  View.OnClickListener, Clas
         mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
-
+                Log.i("guochunhong","AudioPlayView onCompletion....... ");
+                EventBus.getDefault().post(new AudioPlayViewPlayCompleteEvent());
+            }
+        });
+        mMediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+            @Override
+            public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
+                Log.i("guochunhong","AudioPlayView onError....... ");
+                return false;
             }
         });
 
@@ -232,7 +252,9 @@ public class AudioPlayView extends Dialog implements  View.OnClickListener, Clas
                     mMediaPlayer.start();
                     mClassInfoPlay.setBackgroundResource(R.drawable.play1);
                     mIsPlaying = true;
-                    mThread.start();
+                    if(mThread != null && !mThread.isAlive()){
+                        mThread.start();
+                    }
                 }
                 break;
             case R.id.class_info_back_15:
