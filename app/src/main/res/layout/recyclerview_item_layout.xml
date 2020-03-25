@@ -84,7 +84,7 @@
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_marginRight="20dp"
-        android:src="@drawable/collection"
+        android:background="@drawable/collection"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

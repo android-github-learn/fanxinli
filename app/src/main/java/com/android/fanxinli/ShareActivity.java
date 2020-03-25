@@ -16,12 +16,13 @@ import java.util.Map;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 public class ShareActivity extends AppCompatActivity {
 
     private GridView mShareGridView;
     private ImageView mCancleImg;
-    private ImageView mShareImgLayout;
+    private ConstraintLayout mShareImgLayout;
     private ImageView mShareQRcode;
     private TextView mShareTitle;
     private TextView mShareChildTitle;

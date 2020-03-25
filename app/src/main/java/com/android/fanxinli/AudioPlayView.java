@@ -15,7 +15,6 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -25,7 +24,6 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 public class AudioPlayView extends Dialog implements  View.OnClickListener, ClassInfoLrcView.MedCallBack {
@@ -49,7 +47,7 @@ public class AudioPlayView extends Dialog implements  View.OnClickListener, Clas
     private ImageView mClassInfoBackTo15;
     private ImageView mClassInfoForwardTo15;
     private ImageView mClassInfoSubtitle;
-    private ClassInfoLrcView mClassInfoLrcView;
+    private static ClassInfoLrcView mClassInfoLrcView;
 
     private static SeekBar mClassInfoPlaySeekbar;
     private static TextView mClassInfoAlreadyPlayedTime;
@@ -65,8 +63,6 @@ public class AudioPlayView extends Dialog implements  View.OnClickListener, Clas
     private static MediaPlayer mMediaPlayer;
     private int mCurrentPlayPosition = -1;
     public static int AUDIO_PLAY_BACK_FORWARD_NUMBER = 15000;
-    private static Thread mThread;
-    private static boolean mIsPlaying = true;
 
     private LrcRows lrcRows=new LrcRows();
 
@@ -74,27 +70,10 @@ public class AudioPlayView extends Dialog implements  View.OnClickListener, Clas
         super(context);
     }
 
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-
-            // 将SeekBar位置设置到当前播放位置
-            mClassInfoPlaySeekbar.setProgress(msg.what/1000);
-            //获得音乐的当前播放时间
-            mClassInfoAlreadyPlayedTime.setText(Utils.calculateTime(msg.what/1000));
-            mClassInfoLrcView.LrcToPlayer(msg.what);//根据播放的进度，时时跟新歌词
-        }
-    };
-
     public static final void show(Context context, ChildClassInfo childClassInfo, MediaPlayer mediaPlayer) {
         mChildClassInfo = childClassInfo;
         mMediaPlayer = mediaPlayer;
         mContext = context;
-        mIsPlaying = true;
-        if(mThread != null && !mThread.isAlive()){
-            mThread.start();
-        }
         if(dialog == null){
             dialog = new AudioPlayView(context);
         }
@@ -121,6 +100,14 @@ public class AudioPlayView extends Dialog implements  View.OnClickListener, Clas
         Log.i("guochunhong","AudioPlayView notifyUI....... ");
         mChildClassInfo = childClassInfo;
         mMediaPlayer = mediaPlayer;
+    }
+
+    public static void notifySeekbarDataAndUI(long progress){
+        // 将SeekBar位置设置到当前播放位置
+        mClassInfoPlaySeekbar.setProgress((int)(progress/1000));
+        //获得音乐的当前播放时间
+        mClassInfoAlreadyPlayedTime.setText(Utils.calculateTime((int)(progress/1000)));
+        mClassInfoLrcView.LrcToPlayer(progress);//根据播放的进度，时时跟新歌词
     }
 
     @Override
@@ -172,9 +159,6 @@ public class AudioPlayView extends Dialog implements  View.OnClickListener, Clas
         mClassInfoForwardTo15.setOnClickListener(this);
         mClassInfoSubtitle.setOnClickListener(this);
 
-        mThread = new Thread(new MuiscThread());
-        mThread.start();
-
         //监听进度条拖动位置
         mClassInfoPlaySeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -204,6 +188,11 @@ public class AudioPlayView extends Dialog implements  View.OnClickListener, Clas
             public void onCompletion(MediaPlayer mediaPlayer) {
                 Log.i("guochunhong","AudioPlayView onCompletion....... ");
                 EventBus.getDefault().post(new AudioPlayViewPlayCompleteEvent());
+                AudioPlayFragment.mThread.stop();
+                if(isShowing()){
+                    mMediaPlayer.stop();
+                    mClassInfoPlay.setBackgroundResource(R.drawable.pause1);
+                }
             }
         });
         mMediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
@@ -233,6 +222,11 @@ public class AudioPlayView extends Dialog implements  View.OnClickListener, Clas
                 }
                 break;
             case R.id.class_info_collection:
+                if(mChildClassInfo.isIs_collect()){
+                    mClassInfoCollection.setBackground(mContext.getResources().getDrawable(R.drawable.collection1,null));
+                }else {
+                    mClassInfoCollection.setBackground(mContext.getResources().getDrawable(R.drawable.collection,null));
+                }
                 break;
             case R.id.class_info_share:
                 mContext.startActivity(new Intent(mContext,ShareActivity.class));
@@ -246,14 +240,12 @@ public class AudioPlayView extends Dialog implements  View.OnClickListener, Clas
                     mMediaPlayer.pause();
                     mCurrentPlayPosition = mMediaPlayer.getCurrentPosition();
                     mClassInfoPlay.setBackgroundResource(R.drawable.pause1);
-                    mIsPlaying = false;
                 }else{
                     mMediaPlayer.seekTo(mCurrentPlayPosition);
                     mMediaPlayer.start();
                     mClassInfoPlay.setBackgroundResource(R.drawable.play1);
-                    mIsPlaying = true;
-                    if(mThread != null && !mThread.isAlive()){
-                        mThread.start();
+                    if(!AudioPlayFragment.mThread.isAlive()){
+                        AudioPlayFragment.mThread.start();
                     }
                 }
                 break;
@@ -291,32 +283,9 @@ public class AudioPlayView extends Dialog implements  View.OnClickListener, Clas
         }
     }
 
-    class MuiscThread implements Runnable {
-
-        @Override
-        //实现run方法
-        public void run() {
-            //判断音乐的状态，在不停止与不暂停的情况下向总线程发出信息
-            while (mMediaPlayer != null && mIsPlaying) {
-
-                try {
-                    // 每100毫秒更新一次位置
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                //发出的信息
-                handler.sendEmptyMessage(mMediaPlayer.getCurrentPosition());
-            }
-
-        }
-
-    }
-
     @Override
     public void dismiss() {
         super.dismiss();
-        mIsPlaying = false;
     }
 
     private void initTimer(){
