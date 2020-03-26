@@ -5,6 +5,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <ImageView
+        android:id="@+id/class_info_bg_img"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg1"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/class_info_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <ImageView
         android:id="@+id/class_info_back"
         android:layout_width="40dp"
         android:layout_height="40dp"
@@ -179,5 +190,6 @@
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginTop="10dp"
         android:layout_marginRight="35dp"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

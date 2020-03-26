@@ -1,5 +1,10 @@
 package com.android.fanxinli;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +17,7 @@ import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -25,6 +31,8 @@ import org.greenrobot.eventbus.EventBus;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 public class AudioPlayView extends Dialog implements  View.OnClickListener, ClassInfoLrcView.MedCallBack {
 
@@ -47,7 +55,9 @@ public class AudioPlayView extends Dialog implements  View.OnClickListener, Clas
     private ImageView mClassInfoBackTo15;
     private ImageView mClassInfoForwardTo15;
     private ImageView mClassInfoSubtitle;
+    private static ImageView mClassInfoBGimg;
     private static ClassInfoLrcView mClassInfoLrcView;
+    private ConstraintLayout mClassInfoLayout;
 
     private static SeekBar mClassInfoPlaySeekbar;
     private static TextView mClassInfoAlreadyPlayedTime;
@@ -115,6 +125,7 @@ public class AudioPlayView extends Dialog implements  View.OnClickListener, Clas
         super.onCreate(savedInstanceState);
         setContentView(R.layout.audio_child_content_view);
         initView();
+        setBgImageAnimation();
     }
 
     private void initView(){
@@ -135,6 +146,8 @@ public class AudioPlayView extends Dialog implements  View.OnClickListener, Clas
         mClassInfoAlreadyPlayedTime = findViewById(R.id.class_info_already_played_time);
         mClassInfoTotalTime = findViewById(R.id.class_info_total_play_time);
         mClassInfoLrcView = findViewById(R.id.class_info_lyric_show);
+        mClassInfoBGimg = findViewById(R.id.class_info_bg_img);
+        mClassInfoLayout = findViewById(R.id.class_info_layout);
 
         try {
             InputStream inputStream=mContext.getResources().getAssets().open("shaonian.lrc");
@@ -158,6 +171,8 @@ public class AudioPlayView extends Dialog implements  View.OnClickListener, Clas
         mClassInfoBackTo15.setOnClickListener(this);
         mClassInfoForwardTo15.setOnClickListener(this);
         mClassInfoSubtitle.setOnClickListener(this);
+        mClassInfoLayout.setOnClickListener(this);
+        mClassInfoBGimg.setOnClickListener(this);
 
         //监听进度条拖动位置
         mClassInfoPlaySeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -199,7 +214,7 @@ public class AudioPlayView extends Dialog implements  View.OnClickListener, Clas
             @Override
             public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
                 Log.i("guochunhong","AudioPlayView onError....... ");
-                return false;
+                return true;
             }
         });
 
@@ -272,6 +287,12 @@ public class AudioPlayView extends Dialog implements  View.OnClickListener, Clas
                 }else{
                     mClassInfoLrcView.setVisibility(View.VISIBLE);
                 }
+                break;
+            case R.id.class_info_layout:
+                mClassInfoLayout.setVisibility(View.GONE);
+                break;
+            case R.id.class_info_bg_img:
+                mClassInfoLayout.setVisibility(View.VISIBLE);
                 break;
         }
     }
@@ -382,6 +403,39 @@ public class AudioPlayView extends Dialog implements  View.OnClickListener, Clas
             }
         };
         mTimerCountDown.start();
+    }
+
+    private static void setBgImageAnimation() {
+
+        //表示从1f --> 1.13f 的变化过程
+        ObjectAnimator animatorLargeX = ObjectAnimator.ofFloat(mClassInfoBGimg, "scaleX", 1f, 1.8f);
+        animatorLargeX.setRepeatCount(ValueAnimator.INFINITE);
+        ObjectAnimator animatorLargeY = ObjectAnimator.ofFloat(mClassInfoBGimg, "scaleY", 1f, 1.8f);
+        animatorLargeY.setRepeatCount(ValueAnimator.INFINITE);
+        //表示多个动画的协同工作
+        final AnimatorSet setLarge = new AnimatorSet();
+        setLarge.setDuration(20000).play(animatorLargeX).with(animatorLargeY);
+        //对动画的监听,动画结束后立马跳转到主页面上
+        setLarge.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+//                setLarge.cancel();
+//                ObjectAnimator alpha = ObjectAnimator.ofFloat(mClassInfoBGimg, "alpha", 1.0f, 0f);
+//                alpha.setDuration(3000);
+//                alpha.addListener(new AnimatorListenerAdapter() {
+//                    @Override
+//                    public void onAnimationEnd(Animator animation) {
+//                        setLarge.start();
+//                    }
+//                });
+//                alpha.start();
+
+                mClassInfoBGimg.setScaleX(1f);
+                mClassInfoBGimg.setScaleY(1f);
+            }
+        });
+        setLarge.start();
+
     }
 
 }

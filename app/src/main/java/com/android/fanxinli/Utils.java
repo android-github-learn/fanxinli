@@ -1,15 +1,19 @@
 package com.android.fanxinli;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.util.Base64;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 
@@ -99,5 +103,31 @@ public class Utils {
         }
         return Base64.encodeToString(bitmapBytes,Base64.DEFAULT);
 //		return bmp;
+    }
+
+    public static byte [] bitmapToByteArray(Bitmap bitmap, final boolean needRecycle) {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        if (bitmap ==null || bitmap.isRecycled())
+            return null;
+        bitmap.compress(Bitmap.CompressFormat.WEBP, 80, outputStream);
+        if (needRecycle) {
+            bitmap.recycle();
+        }
+
+        byte [] result = outputStream.toByteArray();
+        try {
+            outputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (result.length > 32 * 1024)
+            result = Arrays.copyOf(result, 32 * 1024);
+
+        return result;
+    }
+
+    public static float dip2px(Context context,float dip) {
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip, metrics);
     }
 }

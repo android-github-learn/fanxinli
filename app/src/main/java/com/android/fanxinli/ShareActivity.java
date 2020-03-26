@@ -1,13 +1,22 @@
 package com.android.fanxinli;
 
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+
+import com.sina.weibo.sdk.constant.WBConstants;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,7 +56,6 @@ public class ShareActivity extends AppCompatActivity {
         mShareSlogan = findViewById(R.id.share_img_bottom_layout_slogan);
         mShareQRcode = findViewById(R.id.share_img_bottom_layout_qrcode);
 
-
         mCancleImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -78,7 +86,14 @@ public class ShareActivity extends AppCompatActivity {
         mShareGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                switch (i){
+                    case 0://朋友圈
 
+                        break;
+                    case 1://微信好友
+                        ShareManager.getInstance(ShareActivity.this).shareImageToWx(ShareActivity.this, Utils.layoutToImage(mShareImgLayout,(int) Utils.dip2px(ShareActivity.this,390),(int) Utils.dip2px(ShareActivity.this,310)), 0);
+                        break;
+                }
             }
         });
     }

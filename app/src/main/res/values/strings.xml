@@ -1,3 +1,14 @@
 <resources>
-    <string name="app_name">fanxinli</string>
+    <string name="app_name">泛心理</string>
+    <string name="qq_not_install">您的设备没有安装QQ，请安装后再尝试分享</string>
+    <string name="wechat_not_install">您的设备没有安装微信，请安装后再尝试分享</string>
+    <string name="share_cancel">分享取消</string>
+    <string name="share_success">分享成功</string>
+    <string name="share_failure">分享失败</string>
+
+    <string name="weixin_app_id" translatable="false">wx382061a8875723b4</string>
+    <string name="weixin_secret" translatable="false">f856705dbf0ae585a62ab6c472eef375</string>
+    <string name="qq_app_id" translatable="false">1106455849</string>
+    <string name="qq_auth_scheme" translatable="false">tencent1106455849</string>
+    <string name="weobo_app_id" translatable="false">3139314637</string>
 </resources>

@@ -5,28 +5,38 @@
     android:layout_height="match_parent"
     android:background="@color/white">
 
-    <androidx.core.widget.NestedScrollView
+    <com.android.fanxinli.BounceZoomScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="70dp">
+        android:layout_marginBottom="70dp"
+        android:overScrollMode="never"
+        android:scrollbars="none">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:focusable="true"
             android:focusableInTouchMode="true">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <RelativeLayout
+                android:id="@+id/audio_play_layout_img_layout"
                 android:layout_width="match_parent"
-                android:layout_height="300dp">
-
+                android:layout_height="300dp"
+                app:layout_constraintTop_toTopOf="parent">
                 <ImageView
                     android:id="@+id/audio_play_layout_img"
                     android:layout_width="match_parent"
-                    android:layout_height="300dp"
-                    android:background="@color/colorAccent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:background="@drawable/bg" />
+            </RelativeLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/audio_play_layout_top"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
                     android:id="@+id/audio_play_layout_back"
@@ -92,28 +102,37 @@
                     app:layout_constraintStart_toEndOf="@+id/audio_play_layout_class_hour" />
 
 
-            </androidx.constraintlayout.widget.ConstraintLayout><!--</android.support.v4.widget.NestedScrollView>-->
+            </androidx.constraintlayout.widget.ConstraintLayout>
             <TextView
                 android:id="@+id/audio_play_layout_description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="20dp"
-                android:text="爱自己冥想，由XXX提供" />
+                android:layout_marginBottom="20dp"
+                android:text="爱自己冥想，由XXX提供"
+                app:layout_constraintTop_toBottomOf="@+id/audio_play_layout_img_layout"
+                app:layout_constraintLeft_toLeftOf="parent"/>
 
             <View
+                android:id="@+id/audio_play_layout_view"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginRight="20dp"
                 android:layout_marginBottom="10dp"
-                android:background="@color/gray" />
+                android:background="@color/gray"
+                app:layout_constraintTop_toBottomOf="@+id/audio_play_layout_description"/>
 
             <RelativeLayout
+                android:id="@+id/audio_play_layout_lecturer_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp">
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                app:layout_constraintTop_toBottomOf="@+id/audio_play_layout_view">
 
                 <ImageView
                     android:id="@+id/audio_play_layout_lecturer_photo"
@@ -140,20 +159,23 @@
             </RelativeLayout>
 
             <View
+                android:id="@+id/audio_play_layout_view2"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginRight="20dp"
                 android:layout_marginBottom="10dp"
-                android:background="@color/gray" />
+                android:background="@color/gray"
+                app:layout_constraintTop_toBottomOf="@+id/audio_play_layout_lecturer_layout"/>
 
             <com.android.fanxinli.ExtendedRecyclerView
                 android:id="@+id/audio_play_layout_recyclerview"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+                android:layout_height="match_parent"
+                app:layout_constraintTop_toBottomOf="@+id/audio_play_layout_view2"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.android.fanxinli.BounceZoomScrollView>
 
     <TextView
         android:id="@+id/audio_play_layout_play"
