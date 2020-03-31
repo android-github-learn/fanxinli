@@ -44,6 +44,7 @@ public class AudioPlayFragment extends Fragment {
     private static RecyclerViewAdapter mAudioPlayRecyclerViewAdapter;
     private RecyclerViewAdapter.ViewHolder mAudioPlayAdapterViewHolder;
     private static MediaPlayer mAudioPlayMediaPlayer;
+    private MediaPlayer mBackgroundMediaPlayer;
 
     private static List<ChildClassInfo> mChildClassInfoList = new ArrayList<>();
     private AssetFileDescriptor mAssetFileDescriptor;
@@ -55,7 +56,7 @@ public class AudioPlayFragment extends Fragment {
     private static int current_play_position = -1;
     private int current_play_complay_position = -1;
     private static long mCurrentMediaTotalTime;
-    private String[] mMusics = {"shaonian.mp3","b.mp3","b.mp3","1.mp3"};
+    private String[] mMusics = {"shaonian.mp3","b.mp3","b.mp3","1.mp3","d.mp3"};
 
     private static Handler handler = new Handler() {
         @Override
@@ -215,7 +216,9 @@ public class AudioPlayFragment extends Fragment {
 
     private void initMediaPlayer(){
         mAudioPlayMediaPlayer = new MediaPlayer();
+        mBackgroundMediaPlayer= new MediaPlayer();
         // 设置音量，参数分别表示左右声道声音大小，取值范围为0~1
+        mBackgroundMediaPlayer.setVolume(0.0f, 0.0f);
         mAudioPlayMediaPlayer.setVolume(0.5f, 0.5f);
         // 设置是否循环播放
 //        mAudioPlayMediaPlayer.setLooping(true);
@@ -226,7 +229,6 @@ public class AudioPlayFragment extends Fragment {
                 mCurrentMediaTotalTime = mAudioPlayMediaPlayer.getDuration();
                 Log.i("guochunhong","onPrepared current_play_position :" + current_play_position);
                 mAudioPlayMediaPlayer.start();
-//                mAudioPlayAdapterViewHolder.play_status.setBackground(getActivity().getResources().getDrawable(R.drawable.play,null));
                 Log.i("guochunhong","onPrepared mIsThreadRunning :" + mIsThreadRunning);
                 if(!mIsThreadRunning){
                     mIsThreadRunning = true;
@@ -235,6 +237,13 @@ public class AudioPlayFragment extends Fragment {
                 mAudioPlayRecyclerViewAdapter.notifyDataSetChanged();
                 mChildClassInfoList.get(current_play_position).setPlayStatus(true);
                 AudioPlayView.notifyPlayStatus(mAudioPlayMediaPlayer.isPlaying());
+            }
+        });
+
+        mBackgroundMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                mBackgroundMediaPlayer.start();
             }
         });
 
@@ -251,6 +260,7 @@ public class AudioPlayFragment extends Fragment {
                     mAudioPlayView.setText("开始第"+(current_play_complay_position+2)+"节");
                 }
                 mAudioPlayMediaPlayer.stop();
+                mBackgroundMediaPlayer.stop();
                 mIsThreadRunning = false;
             }
         });
@@ -258,6 +268,12 @@ public class AudioPlayFragment extends Fragment {
             @Override
             public boolean onError(MediaPlayer mediaPlayer, int what, int extra) {
                 Log.i("guochunhong","setOnErrorListener  what:" + what+"    extra :" + extra);
+                return true;
+            }
+        });
+        mBackgroundMediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+            @Override
+            public boolean onError(MediaPlayer mp, int what, int extra) {
                 return true;
             }
         });
@@ -271,12 +287,8 @@ public class AudioPlayFragment extends Fragment {
                 mAudioPlayAdapterViewHolder = viewHolder;
                 final ChildClassInfo childClassInfo = mChildClassInfoList.get(position);
                 try {
-                    if(mAudioPlayMediaPlayer == null){
-                        mAudioPlayMediaPlayer = new MediaPlayer();
-                    }
-
                     if(current_play_position == position){
-                        AudioPlayView.show(getActivity(),childClassInfo, mAudioPlayMediaPlayer);
+                        AudioPlayView.show(getActivity(),childClassInfo, mAudioPlayMediaPlayer,mBackgroundMediaPlayer);
                         return;
                     }
                     if(current_play_position != -1){
@@ -285,12 +297,18 @@ public class AudioPlayFragment extends Fragment {
                             mAudioPlayRecyclerViewAdapter.notifyDataSetChanged();
                         }
                     }
+                    //背景音乐播放
+                    mBackgroundMediaPlayer.reset();
+                    AssetFileDescriptor assetFileDescriptor = getActivity().getAssets().openFd(mMusics[4]);
+                    mBackgroundMediaPlayer.setDataSource(assetFileDescriptor.getFileDescriptor(), assetFileDescriptor.getStartOffset(), assetFileDescriptor.getLength());
+                    mBackgroundMediaPlayer.prepareAsync();
+
                     mAudioPlayMediaPlayer.reset();
                     mAssetFileDescriptor = getActivity().getAssets().openFd(mMusics[position]);
                     mAudioPlayMediaPlayer.setDataSource(mAssetFileDescriptor.getFileDescriptor(), mAssetFileDescriptor.getStartOffset(), mAssetFileDescriptor.getLength());
                     mAudioPlayMediaPlayer.prepareAsync();
                     current_play_position = position;
-                    AudioPlayView.show(getActivity(),mChildClassInfoList.get(current_play_position), mAudioPlayMediaPlayer);
+                    AudioPlayView.show(getActivity(),mChildClassInfoList.get(current_play_position), mAudioPlayMediaPlayer,mBackgroundMediaPlayer);
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -330,13 +348,19 @@ public class AudioPlayFragment extends Fragment {
                 if(current_play_position==mChildClassInfoList.size()-1){
                     current_play_position = -1;
                 }
+                //背景音乐播放
+                mBackgroundMediaPlayer.reset();
+                AssetFileDescriptor assetFileDescriptor = getActivity().getAssets().openFd(mMusics[4]);
+                mBackgroundMediaPlayer.setDataSource(assetFileDescriptor.getFileDescriptor(), assetFileDescriptor.getStartOffset(), assetFileDescriptor.getLength());
+                mBackgroundMediaPlayer.prepareAsync();
+
                 mAudioPlayMediaPlayer.reset();
                 current_play_position ++;
                 mAssetFileDescriptor = getActivity().getAssets().openFd(mMusics[current_play_position]);
                 mAudioPlayMediaPlayer.setDataSource(mAssetFileDescriptor.getFileDescriptor(), mAssetFileDescriptor.getStartOffset(), mAssetFileDescriptor.getLength());
                 mAudioPlayMediaPlayer.prepareAsync();
             }
-            AudioPlayView.show(getActivity(),mChildClassInfoList.get(current_play_position), mAudioPlayMediaPlayer);
+            AudioPlayView.show(getActivity(),mChildClassInfoList.get(current_play_position), mAudioPlayMediaPlayer,mBackgroundMediaPlayer);
         }catch (IOException e){
 
         }
@@ -355,6 +379,13 @@ public class AudioPlayFragment extends Fragment {
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(NotifyBackgroundMediaPlayerVolumeEvent event){
+        float volumeNumber = ((float)event.getVolumeNumber()/100);
+        Log.i("guochunhong","NotifyBackgroundMediaPlayerVolumeEvent volumeNumber :"  + volumeNumber);
+        mBackgroundMediaPlayer.setVolume(volumeNumber,volumeNumber);
+    }
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -367,6 +398,11 @@ public class AudioPlayFragment extends Fragment {
             mAudioPlayMediaPlayer.stop();
             mAudioPlayMediaPlayer.release();
             mAudioPlayMediaPlayer = null;
+        }
+        if (mBackgroundMediaPlayer != null) {
+            mBackgroundMediaPlayer.stop();
+            mBackgroundMediaPlayer.release();
+            mBackgroundMediaPlayer = null;
         }
         if(EventBus.getDefault().isRegistered(this)){
             EventBus.getDefault().unregister(this);

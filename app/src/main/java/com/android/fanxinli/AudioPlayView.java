@@ -71,6 +71,7 @@ public class AudioPlayView extends Dialog implements  View.OnClickListener, Clas
 
     private static ChildClassInfo mChildClassInfo;
     private static MediaPlayer mMediaPlayer;
+    private static MediaPlayer mBackgroundMediaPlayer;
     private int mCurrentPlayPosition = -1;
     public static int AUDIO_PLAY_BACK_FORWARD_NUMBER = 15000;
 
@@ -80,9 +81,10 @@ public class AudioPlayView extends Dialog implements  View.OnClickListener, Clas
         super(context);
     }
 
-    public static final void show(Context context, ChildClassInfo childClassInfo, MediaPlayer mediaPlayer) {
+    public static final void show(Context context, ChildClassInfo childClassInfo, MediaPlayer mediaPlayer,MediaPlayer backgroundMediaPlayer) {
         mChildClassInfo = childClassInfo;
         mMediaPlayer = mediaPlayer;
+        mBackgroundMediaPlayer = backgroundMediaPlayer;
         mContext = context;
         if(dialog == null){
             dialog = new AudioPlayView(context);
@@ -201,6 +203,7 @@ public class AudioPlayView extends Dialog implements  View.OnClickListener, Clas
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 mMediaPlayer.seekTo(seekBar.getProgress()*1000);//在当前位置播放
+                mBackgroundMediaPlayer.seekTo(seekBar.getProgress()*1000);
                 mClassInfoAlreadyPlayedTime.setText(Utils.calculateTime(mMediaPlayer.getCurrentPosition()/1000));
                 mClassInfoPlay.setBackgroundResource(R.drawable.play1);
             }
@@ -214,6 +217,7 @@ public class AudioPlayView extends Dialog implements  View.OnClickListener, Clas
                 AudioPlayFragment.mIsThreadRunning = false;
                 if(isShowing()){
                     mMediaPlayer.stop();
+                    mBackgroundMediaPlayer.stop();
                     mClassInfoPlay.setBackgroundResource(R.drawable.pause1);
                 }
             }
@@ -222,6 +226,12 @@ public class AudioPlayView extends Dialog implements  View.OnClickListener, Clas
             @Override
             public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
                 Log.i("guochunhong","AudioPlayView onError....... ");
+                return true;
+            }
+        });
+        mBackgroundMediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+            @Override
+            public boolean onError(MediaPlayer mp, int what, int extra) {
                 return true;
             }
         });
@@ -261,6 +271,7 @@ public class AudioPlayView extends Dialog implements  View.OnClickListener, Clas
             case R.id.class_info_play:
                 if(mMediaPlayer.isPlaying()){
                     mMediaPlayer.pause();
+                    mBackgroundMediaPlayer.pause();
                     mCurrentPlayPosition = mMediaPlayer.getCurrentPosition();
                     mClassInfoPlay.setBackgroundResource(R.drawable.pause1);
                     if(AudioPlayFragment.mIsThreadRunning){
@@ -269,6 +280,7 @@ public class AudioPlayView extends Dialog implements  View.OnClickListener, Clas
                 }else{
                     mMediaPlayer.seekTo(mCurrentPlayPosition);
                     mMediaPlayer.start();
+                    mBackgroundMediaPlayer.start();
                     mClassInfoPlay.setBackgroundResource(R.drawable.play1);
                     if(!AudioPlayFragment.mIsThreadRunning){
                         AudioPlayFragment.mIsThreadRunning = true;
@@ -280,16 +292,22 @@ public class AudioPlayView extends Dialog implements  View.OnClickListener, Clas
                 mCurrentPlayPosition = mMediaPlayer.getCurrentPosition();
                 if(mCurrentPlayPosition-AUDIO_PLAY_BACK_FORWARD_NUMBER > 0){
                     mMediaPlayer.seekTo(mCurrentPlayPosition-AUDIO_PLAY_BACK_FORWARD_NUMBER);
+                    mBackgroundMediaPlayer.seekTo(mCurrentPlayPosition-AUDIO_PLAY_BACK_FORWARD_NUMBER);
                 }else{
                     mMediaPlayer.seekTo(0);
+                    mBackgroundMediaPlayer.seekTo(0);
                 }
                 break;
             case R.id.class_info_forward_15:
                 mCurrentPlayPosition = mMediaPlayer.getCurrentPosition();
                 if(mCurrentPlayPosition+AUDIO_PLAY_BACK_FORWARD_NUMBER < mMediaPlayer.getDuration()){
                     mMediaPlayer.seekTo(mCurrentPlayPosition+AUDIO_PLAY_BACK_FORWARD_NUMBER);
+                    mBackgroundMediaPlayer.seekTo(mCurrentPlayPosition+AUDIO_PLAY_BACK_FORWARD_NUMBER);
                 }else{
+                    mMediaPlayer.seekTo(mMediaPlayer.getDuration());
                     mMediaPlayer.pause();
+                    mBackgroundMediaPlayer.seekTo(mBackgroundMediaPlayer.getDuration());
+                    mBackgroundMediaPlayer.pause();
                     mClassInfoPlay.setBackgroundResource(R.drawable.pause1);
                 }
                 break;
@@ -313,6 +331,9 @@ public class AudioPlayView extends Dialog implements  View.OnClickListener, Clas
     public void call(long time) {
         if (mMediaPlayer.isPlaying()) {
             mMediaPlayer.seekTo((int) time);
+        }
+        if (mBackgroundMediaPlayer.isPlaying()) {
+            mBackgroundMediaPlayer.seekTo((int) time);
         }
     }
 
@@ -412,6 +433,7 @@ public class AudioPlayView extends Dialog implements  View.OnClickListener, Clas
             public void onFinish() {
                 mClassInfoTimerNumber.setVisibility(View.GONE);
                 mMediaPlayer.pause();
+                mBackgroundMediaPlayer.pause();
             }
         };
         mTimerCountDown.start();
