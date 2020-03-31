@@ -25,13 +25,13 @@ public class LrcRows {
 //            InputStream inputStream = assetManager.open("shaonian.lrc");
             //将字节输入流转化为字符流
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"GB2312"));
-            Log.i("guochunhong","LrcRows BuildList bufferedReader :" + bufferedReader + "   inputStream : " + inputStream);
+//            Log.i("guochunhong","LrcRows BuildList bufferedReader :" + bufferedReader + "   inputStream : " + inputStream);
             String line = null;
             while ((line = bufferedReader.readLine()) != null) {
                 LrcRow lrcRow = new LrcRow();//创建每行封装歌词的对象
                 //获取新的解析封装好的歌词 添加到集合中
                 LrcRow lrcRow2 = lrcRow.getRow(line);
-                Log.i("guochunhong","LrcRows BuildList lrcRow2 :" + lrcRow2);
+//                Log.i("guochunhong","LrcRows BuildList lrcRow2 :" + lrcRow2);
 
                 if (lrcRow2 != null) {
                     list.add(lrcRow2);

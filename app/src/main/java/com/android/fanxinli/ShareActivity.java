@@ -43,6 +43,8 @@ public class ShareActivity extends AppCompatActivity {
 
     private List<Map<String, Object>> data_list = new ArrayList<>();
 
+    //ShareMoodCardActivity createShareBitmap()创建生成图片方法
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

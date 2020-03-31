@@ -41,24 +41,30 @@ public class AudioPlayFragment extends Fragment {
     private TextView mAudioPlayLecturerIntroduction;
     private TextView mAudioPlayView;
     private RecyclerView mAudioPlayRecyclerView;
-    private RecyclerViewAdapter mAudioPlayRecyclerViewAdapter;
+    private static RecyclerViewAdapter mAudioPlayRecyclerViewAdapter;
     private RecyclerViewAdapter.ViewHolder mAudioPlayAdapterViewHolder;
-    private MediaPlayer mAudioPlayMediaPlayer;
+    private static MediaPlayer mAudioPlayMediaPlayer;
 
-    private List<ChildClassInfo> mChildClassInfoList = new ArrayList<>();
+    private static List<ChildClassInfo> mChildClassInfoList = new ArrayList<>();
     private AssetFileDescriptor mAssetFileDescriptor;
 
     private AudioPlayClassInfo mAudioPlayClassInfo;
     public static Thread mThread;
 
-    private int current_play_position = -1;
-    private long mCurrentMediaTotalTime;
+    public static boolean mIsThreadRunning = true;
+    private static int current_play_position = -1;
+    private int current_play_complay_position = -1;
+    private static long mCurrentMediaTotalTime;
     private String[] mMusics = {"shaonian.mp3","b.mp3","b.mp3","1.mp3"};
 
-    private Handler handler = new Handler() {
+    private static Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
+            Log.i("guochunhong","handleMessage ......"  + mAudioPlayMediaPlayer.isPlaying());
+            if(mAudioPlayMediaPlayer == null || !mAudioPlayMediaPlayer.isPlaying()){
+                return;
+            }
             long currentPosition = msg.what;
             AudioPlayView.notifySeekbarDataAndUI(currentPosition);
 
@@ -80,7 +86,8 @@ public class AudioPlayFragment extends Fragment {
         //实现run方法
         public void run() {
             //判断音乐的状态，在不停止与不暂停的情况下向总线程发出信息
-            while (mAudioPlayMediaPlayer != null && mAudioPlayMediaPlayer.isPlaying()) {
+            Log.i("guochunhong","MuiscThread run mIsThreadRunning :" + mIsThreadRunning);
+            while (mAudioPlayMediaPlayer != null && mIsThreadRunning) {
 
                 try {
                     // 每100毫秒更新一次位置
@@ -90,11 +97,29 @@ public class AudioPlayFragment extends Fragment {
                 }
                 //发出的信息
                 handler.sendEmptyMessage(mAudioPlayMediaPlayer.getCurrentPosition());
+                Log.i("guochunhong","MuiscThread run222 mIsThreadRunning :" + mIsThreadRunning);
             }
-
         }
-
     }
+
+    public static Runnable mPlayerRunnable = new Runnable() {
+        @Override
+        public void run() {
+            Log.i("guochunhong","mPlayerRunnable run mIsThreadRunning :" + mIsThreadRunning);
+            while (mAudioPlayMediaPlayer != null && mIsThreadRunning) {
+
+                try {
+                    // 每100毫秒更新一次位置
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                //发出的信息
+                handler.sendEmptyMessage(mAudioPlayMediaPlayer.getCurrentPosition());
+                Log.i("guochunhong","mPlayerRunnable run222 mIsThreadRunning :" + mIsThreadRunning);
+            }
+        }
+    };
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -140,8 +165,9 @@ public class AudioPlayFragment extends Fragment {
             EventBus.getDefault().register(this);
         }
 
-        mThread = new Thread(new MuiscThread());
-
+//        mThread = new Thread(new MuiscThread());
+//        mThread.start();
+        new Thread(mPlayerRunnable).start();
 
         return view;
     }
@@ -201,11 +227,14 @@ public class AudioPlayFragment extends Fragment {
                 Log.i("guochunhong","onPrepared current_play_position :" + current_play_position);
                 mAudioPlayMediaPlayer.start();
 //                mAudioPlayAdapterViewHolder.play_status.setBackground(getActivity().getResources().getDrawable(R.drawable.play,null));
-                if(!mThread.isAlive()){
-                    mThread.start();
+                Log.i("guochunhong","onPrepared mIsThreadRunning :" + mIsThreadRunning);
+                if(!mIsThreadRunning){
+                    mIsThreadRunning = true;
+                    new Thread(mPlayerRunnable).start();
                 }
                 mAudioPlayRecyclerViewAdapter.notifyDataSetChanged();
                 mChildClassInfoList.get(current_play_position).setPlayStatus(true);
+                AudioPlayView.notifyPlayStatus(mAudioPlayMediaPlayer.isPlaying());
             }
         });
 
@@ -213,23 +242,23 @@ public class AudioPlayFragment extends Fragment {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
                 Log.i("guochunhong","onCompletion current_play_position :" + current_play_position);
-                int position = current_play_position;
+                current_play_complay_position = current_play_position;
                 //播放到列表中的最后一节，播放按钮显示从头开始播放第一节
-                if(position==mChildClassInfoList.size()-1){
-                    position = 1;
-                    mAudioPlayView.setText("开始第"+position+"节");
+                if(current_play_complay_position==mChildClassInfoList.size()-1){
+                    current_play_complay_position = 1;
+                    mAudioPlayView.setText("开始第"+current_play_complay_position+"节");
                 }else{
-                    mAudioPlayView.setText("开始第"+(position+2)+"节");
+                    mAudioPlayView.setText("开始第"+(current_play_complay_position+2)+"节");
                 }
                 mAudioPlayMediaPlayer.stop();
-                mThread.stop();
+                mIsThreadRunning = false;
             }
         });
         mAudioPlayMediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
             @Override
             public boolean onError(MediaPlayer mediaPlayer, int what, int extra) {
                 Log.i("guochunhong","setOnErrorListener  what:" + what+"    extra :" + extra);
-                return false;
+                return true;
             }
         });
     }
@@ -291,20 +320,22 @@ public class AudioPlayFragment extends Fragment {
 
     private void mediaPlay(){
         try {
-            if(current_play_position != -1){
-                for (int i = 0;i<mChildClassInfoList.size();i++){
-                    mChildClassInfoList.get(i).setPlayStatus(false);
-                    mAudioPlayRecyclerViewAdapter.notifyDataSetChanged();
+            if(current_play_complay_position == current_play_position){
+                if(current_play_position != -1){
+                    for (int i = 0;i<mChildClassInfoList.size();i++){
+                        mChildClassInfoList.get(i).setPlayStatus(false);
+                        mAudioPlayRecyclerViewAdapter.notifyDataSetChanged();
+                    }
                 }
+                if(current_play_position==mChildClassInfoList.size()-1){
+                    current_play_position = -1;
+                }
+                mAudioPlayMediaPlayer.reset();
+                current_play_position ++;
+                mAssetFileDescriptor = getActivity().getAssets().openFd(mMusics[current_play_position]);
+                mAudioPlayMediaPlayer.setDataSource(mAssetFileDescriptor.getFileDescriptor(), mAssetFileDescriptor.getStartOffset(), mAssetFileDescriptor.getLength());
+                mAudioPlayMediaPlayer.prepareAsync();
             }
-            if(current_play_position==mChildClassInfoList.size()-1){
-                current_play_position = -1;
-            }
-            mAudioPlayMediaPlayer.reset();
-            current_play_position ++;
-            mAssetFileDescriptor = getActivity().getAssets().openFd(mMusics[current_play_position]);
-            mAudioPlayMediaPlayer.setDataSource(mAssetFileDescriptor.getFileDescriptor(), mAssetFileDescriptor.getStartOffset(), mAssetFileDescriptor.getLength());
-            mAudioPlayMediaPlayer.prepareAsync();
             AudioPlayView.show(getActivity(),mChildClassInfoList.get(current_play_position), mAudioPlayMediaPlayer);
         }catch (IOException e){
 
@@ -314,13 +345,13 @@ public class AudioPlayFragment extends Fragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(AudioPlayViewPlayCompleteEvent event) {
 //        AudioPlayView.notifyUI(mChildClassInfoList.get(current_play_position),mAudioPlayMediaPlayer);
-        int position = current_play_position;
+        current_play_complay_position = current_play_position;
         //播放到列表中的最后一节，播放按钮显示从头开始播放第一节
-        if(position==mChildClassInfoList.size()-1){
-            position = 1;
+        if(current_play_complay_position==mChildClassInfoList.size()-1){
+            current_play_complay_position = 1;
             mAudioPlayView.setText("列表播放完成");
         }else{
-            mAudioPlayView.setText("开始第"+(position+2)+"节");
+            mAudioPlayView.setText("开始第"+(current_play_complay_position+2)+"节");
         }
     }
 

@@ -28,7 +28,7 @@ public class LrcRow {
         String newTime = str_timer.replace(".", ":");
         //字符串的分割：自动分割成一个string类型的数组
         String[] arr = newTime.split(":");
-        Log.i("guochunhong","LrcRow getRow arr :" + arr[0].toString());
+//        Log.i("guochunhong","LrcRow getRow arr :" + arr[0].toString());
         //将字符串格式的时间转换为毫秒格式的时间
         time = Integer.valueOf(arr[0]) * 60 * 1000 + Integer.valueOf(arr[1]) * 1000 +
                 Integer.valueOf(arr[2]);

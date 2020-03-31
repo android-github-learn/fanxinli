@@ -12,14 +12,14 @@ import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -51,7 +51,7 @@ public class AudioPlayView extends Dialog implements  View.OnClickListener, Clas
     private ImageView mClassInfoCollection;
     private ImageView mClassInfoShare;
     private ImageView mClassInfoShock;
-    private ImageView mClassInfoPlay;
+    private static ImageView mClassInfoPlay;
     private ImageView mClassInfoBackTo15;
     private ImageView mClassInfoForwardTo15;
     private ImageView mClassInfoSubtitle;
@@ -104,6 +104,14 @@ public class AudioPlayView extends Dialog implements  View.OnClickListener, Clas
         mClassInfoAlreadyPlayedTime.setText(Utils.calculateTime(position));
         mClassInfoTotalTime.setText(Utils.calculateTime(duration2));
         mClassInfoPlaySeekbar.setMax(duration2);
+    }
+
+    public static void notifyPlayStatus(boolean isPlay){
+        if(isPlay){
+            mClassInfoPlay.setBackgroundResource(R.drawable.play1);
+        }else{
+            mClassInfoPlay.setBackgroundResource(R.drawable.pause1);
+        }
     }
 
     public static void notifyUI(ChildClassInfo childClassInfo, MediaPlayer mediaPlayer){
@@ -203,7 +211,7 @@ public class AudioPlayView extends Dialog implements  View.OnClickListener, Clas
             public void onCompletion(MediaPlayer mediaPlayer) {
                 Log.i("guochunhong","AudioPlayView onCompletion....... ");
                 EventBus.getDefault().post(new AudioPlayViewPlayCompleteEvent());
-                AudioPlayFragment.mThread.stop();
+                AudioPlayFragment.mIsThreadRunning = false;
                 if(isShowing()){
                     mMediaPlayer.stop();
                     mClassInfoPlay.setBackgroundResource(R.drawable.pause1);
@@ -255,12 +263,16 @@ public class AudioPlayView extends Dialog implements  View.OnClickListener, Clas
                     mMediaPlayer.pause();
                     mCurrentPlayPosition = mMediaPlayer.getCurrentPosition();
                     mClassInfoPlay.setBackgroundResource(R.drawable.pause1);
+                    if(AudioPlayFragment.mIsThreadRunning){
+                        AudioPlayFragment.mIsThreadRunning = false;
+                    }
                 }else{
                     mMediaPlayer.seekTo(mCurrentPlayPosition);
                     mMediaPlayer.start();
                     mClassInfoPlay.setBackgroundResource(R.drawable.play1);
-                    if(!AudioPlayFragment.mThread.isAlive()){
-                        AudioPlayFragment.mThread.start();
+                    if(!AudioPlayFragment.mIsThreadRunning){
+                        AudioPlayFragment.mIsThreadRunning = true;
+                        new Thread(AudioPlayFragment.mPlayerRunnable).start();
                     }
                 }
                 break;
@@ -419,19 +431,52 @@ public class AudioPlayView extends Dialog implements  View.OnClickListener, Clas
         setLarge.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-//                setLarge.cancel();
-//                ObjectAnimator alpha = ObjectAnimator.ofFloat(mClassInfoBGimg, "alpha", 1.0f, 0f);
-//                alpha.setDuration(3000);
-//                alpha.addListener(new AnimatorListenerAdapter() {
-//                    @Override
-//                    public void onAnimationEnd(Animator animation) {
-//                        setLarge.start();
-//                    }
-//                });
-//                alpha.start();
+                final View largeImage = mClassInfoBGimg;
+                int largeImageViewWidth = largeImage.getMeasuredWidth();
+                int largeImageViewHeight = largeImage.getMeasuredHeight();
+                ViewGroup.LayoutParams lp = mClassInfoBGimg.getLayoutParams();
+                lp.width = (int) (largeImageViewWidth + 300);
+                lp.height = (int) (largeImageViewHeight * ((largeImageViewWidth + 300) / largeImageViewWidth));
+                ((ViewGroup.MarginLayoutParams) lp).setMargins(-(lp.width - largeImageViewWidth) / 2, 0, 0, 0);
+                largeImage.setLayoutParams(lp);
 
-                mClassInfoBGimg.setScaleX(1f);
-                mClassInfoBGimg.setScaleY(1f);
+                AlphaAnimation alphaAnimation = new AlphaAnimation(1.0f, 0f);//第一个参数开始的透明度，第二个参数结束的透明度
+                alphaAnimation.setDuration(3000);//多长时间完成这个动作
+                largeImage.startAnimation(alphaAnimation);
+                alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+
+//                mClassInfoBGimg.setAlpha(0f);
+//                mClassInfoBGimg.setVisibility(View.VISIBLE);
+//                mClassInfoBGimg.animate()
+//                        .alpha(1f)
+//                        .setDuration(2000)
+//                        .setListener(null);
+//                largeImage.animate()
+//                        .alpha(0f)
+//                        .setDuration(2000)
+//                        .setListener(new AnimatorListenerAdapter() {
+//                            @Override
+//                            public void onAnimationEnd(Animator animation) {
+//                                largeImage.setVisibility(View.GONE);
+//                            }
+//                        });
+
+//                mClassInfoBGimg.setScaleX(1f);
+//                mClassInfoBGimg.setScaleY(1f);
             }
         });
         setLarge.start();

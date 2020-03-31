@@ -52,7 +52,6 @@ public class BounceZoomScrollView extends ScrollView {
 
     //初始化
     private void init() {
-        setOverScrollMode(OVER_SCROLL_NEVER);
         if (getChildAt(0) != null) {
             inner = getChildAt(0);//这个是底部收缩的view
             //头部收缩的
@@ -70,7 +69,7 @@ public class BounceZoomScrollView extends ScrollView {
     protected void onFinishInflate() {
         //设置不可过度滚动，否则上移后下拉会出现部分空白的情况
         setOverScrollMode(OVER_SCROLL_NEVER);
-//        setFadingEdgeLength(0);
+        setFadingEdgeLength(0);
         //初始化
         init();
         super.onFinishInflate();
