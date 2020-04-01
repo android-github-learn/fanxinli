@@ -20,6 +20,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -444,64 +446,39 @@ public class AudioPlayView extends Dialog implements  View.OnClickListener, Clas
         //表示从1f --> 1.13f 的变化过程
         ObjectAnimator animatorLargeX = ObjectAnimator.ofFloat(mClassInfoBGimg, "scaleX", 1f, 1.8f);
         animatorLargeX.setRepeatCount(ValueAnimator.INFINITE);
+        animatorLargeX.setDuration(20000);
+
         ObjectAnimator animatorLargeY = ObjectAnimator.ofFloat(mClassInfoBGimg, "scaleY", 1f, 1.8f);
         animatorLargeY.setRepeatCount(ValueAnimator.INFINITE);
+        animatorLargeY.setDuration(20000);
+
+        ObjectAnimator animatorSmallX = ObjectAnimator.ofFloat(mClassInfoBGimg, "scaleX", 1.8f, 1f);
+        animatorSmallX.setRepeatCount(ValueAnimator.INFINITE);
+//        animatorSmallX.setStartDelay(20000);
+        animatorSmallX.setDuration(2000);
+
+        ObjectAnimator animatorSmallY = ObjectAnimator.ofFloat(mClassInfoBGimg, "scaleY", 1.8f, 1f);
+        animatorSmallY.setRepeatCount(ValueAnimator.INFINITE);
+//        animatorSmallY.setStartDelay(20000);
+        animatorSmallY.setDuration(2000);
+
+        ObjectAnimator alpha = ObjectAnimator.ofFloat(mClassInfoBGimg, "alpha", 1.0f, 0.6f,1f);
+        alpha.setRepeatCount(ValueAnimator.INFINITE);
+//        alpha.setStartDelay(20000);
+        alpha.setDuration(2000);
         //表示多个动画的协同工作
-        final AnimatorSet setLarge = new AnimatorSet();
-        setLarge.setDuration(20000).play(animatorLargeX).with(animatorLargeY);
-        //对动画的监听,动画结束后立马跳转到主页面上
-        setLarge.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                final View largeImage = mClassInfoBGimg;
-                int largeImageViewWidth = largeImage.getMeasuredWidth();
-                int largeImageViewHeight = largeImage.getMeasuredHeight();
-                ViewGroup.LayoutParams lp = mClassInfoBGimg.getLayoutParams();
-                lp.width = (int) (largeImageViewWidth + 300);
-                lp.height = (int) (largeImageViewHeight * ((largeImageViewWidth + 300) / largeImageViewWidth));
-                ((ViewGroup.MarginLayoutParams) lp).setMargins(-(lp.width - largeImageViewWidth) / 2, 0, 0, 0);
-                largeImage.setLayoutParams(lp);
+        AnimatorSet animatorSetLarge = new AnimatorSet();
+        animatorSetLarge.play(animatorLargeX).with(animatorLargeY);
 
-                AlphaAnimation alphaAnimation = new AlphaAnimation(1.0f, 0f);//第一个参数开始的透明度，第二个参数结束的透明度
-                alphaAnimation.setDuration(3000);//多长时间完成这个动作
-                largeImage.startAnimation(alphaAnimation);
-                alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
+        AnimatorSet animatorSetSmall = new AnimatorSet();
+        animatorSetSmall.playTogether(animatorSmallX,animatorSmallY,alpha);
 
-                    }
+        AnimatorSet animatorSet = new AnimatorSet();
+//        animatorSet.playSequentially(animatorSetLarge,animatorSetSmall);
+        animatorSet.play(animatorSetSmall).after(animatorSetLarge).after(20000);
+        animatorSet.start();
 
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                    }
 
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-
-                    }
-                });
-
-//                mClassInfoBGimg.setAlpha(0f);
-//                mClassInfoBGimg.setVisibility(View.VISIBLE);
-//                mClassInfoBGimg.animate()
-//                        .alpha(1f)
-//                        .setDuration(2000)
-//                        .setListener(null);
-//                largeImage.animate()
-//                        .alpha(0f)
-//                        .setDuration(2000)
-//                        .setListener(new AnimatorListenerAdapter() {
-//                            @Override
-//                            public void onAnimationEnd(Animator animation) {
-//                                largeImage.setVisibility(View.GONE);
-//                            }
-//                        });
-
-//                mClassInfoBGimg.setScaleX(1f);
-//                mClassInfoBGimg.setScaleY(1f);
-            }
-        });
-        setLarge.start();
 
     }
 
