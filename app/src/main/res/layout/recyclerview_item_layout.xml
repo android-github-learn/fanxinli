@@ -16,10 +16,10 @@
 
         <ImageView
             android:id="@+id/class_play_status"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginLeft="20dp"
-            android:background="@drawable/play"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginLeft="16dp"
+            android:background="@drawable/list_pause"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -28,9 +28,11 @@
             android:id="@+id/class_audio_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
+            android:layout_marginLeft="10dp"
             android:layout_marginTop="10dp"
             android:text="第一课时"
+            android:textColor="#FF262626"
+            android:textSize="56px"
             app:layout_constraintStart_toEndOf="@+id/class_play_status"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -39,12 +41,11 @@
             style="@style/StyleReadingProgressBar"
             android:layout_width="0dp"
             android:layout_height="8dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginBottom="15dp"
-            android:layout_weight="1"
-            android:background="@drawable/progressbar_bg"
+            android:layout_marginLeft="10dp"
+            android:layout_marginBottom="10dp"
+            android:progressDrawable="@drawable/progressbar_bg"
             android:max="100"
-            android:progress="0"
+            android:progress="40"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/class_play_status" />
 
@@ -52,7 +53,7 @@
             android:id="@+id/class_progressbar_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
+            android:layout_marginLeft="16dp"
             android:layout_marginBottom="10dp"
             android:text="80%"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -81,20 +82,11 @@
 
     <ImageView
         android:id="@+id/class_collection_status"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
         android:layout_marginRight="20dp"
-        android:background="@drawable/collection"
+        android:background="@drawable/list_collection"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:background="@color/gray"
-        app:layout_constraintBottom_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

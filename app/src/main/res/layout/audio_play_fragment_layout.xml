@@ -2,13 +2,12 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/white">
+    android:layout_height="match_parent">
 
     <com.android.fanxinli.BounceZoomScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="70dp"
+        android:layout_marginBottom="90dp"
         android:overScrollMode="never"
         android:scrollbars="none">
 
@@ -22,7 +21,7 @@
             <ImageView
                 android:id="@+id/audio_play_layout_img"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
+                android:layout_height="252dp"
                 android:background="@drawable/bg"
                 android:scaleType="centerCrop"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -32,158 +31,184 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/audio_play_layout_top"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
+                android:layout_height="252dp"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
                     android:id="@+id/audio_play_layout_back"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginTop="20dp"
-                    android:src="@drawable/back"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:layout_marginLeft="24dp"
+                    android:layout_marginTop="37dp"
+                    android:src="@drawable/play_list_back"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
                     android:id="@+id/audio_play_layout_share"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginRight="20dp"
-                    android:src="@drawable/share"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:layout_marginTop="37dp"
+                    android:layout_marginRight="24dp"
+                    android:src="@drawable/play_list_share"
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/audio_play_layout_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginBottom="24dp"
-                    android:text="爱自己冥想"
-                    android:textSize="16dp"
-                    app:layout_constraintBottom_toBottomOf="@+id/audio_play_layout_class_hour"
-                    app:layout_constraintLeft_toLeftOf="parent" />
-
-                <ImageView
-                    android:id="@+id/audio_play_layout_vip"
-                    android:layout_width="80dp"
-                    android:layout_height="20dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginBottom="24dp"
-                    android:background="@drawable/vip"
-                    app:layout_constraintBottom_toBottomOf="@+id/audio_play_layout_class_hour"
-                    app:layout_constraintLeft_toRightOf="@+id/audio_play_layout_name" />
-
-                <TextView
-                    android:id="@+id/audio_play_layout_class_hour"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginBottom="20dp"
-                    android:text="3课时"
-                    android:textSize="14dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintLeft_toLeftOf="parent" />
-
-                <TextView
-                    android:id="@+id/audio_play_layout_practice_number"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginBottom="20dp"
-                    android:text="24.3万人练习"
-                    android:textSize="14dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/audio_play_layout_class_hour" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <TextView
-                android:id="@+id/audio_play_layout_description"
-                android:layout_width="wrap_content"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/audio_play_class_info_layout"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="20dp"
-                android:text="爱自己冥想，由XXX提供"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/audio_play_layout_img" />
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginTop="201dp"
+                android:layout_marginLeft="14dp"
+                android:layout_marginRight="14dp"
+                android:background="@drawable/list_info_layout_corner">
 
-            <View
-                android:id="@+id/audio_play_layout_view"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginBottom="10dp"
-                android:background="@color/gray"
-                app:layout_constraintTop_toBottomOf="@+id/audio_play_layout_description" />
+                <TextView
+                    android:id="@+id/audio_play_layout_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:layout_marginLeft="16dp"
+                    android:gravity="center_vertical"
+                    android:text="爱自己冥想"
+                    android:textColor="#FF262626"
+                    android:textSize="70px"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="@+id/audio_play_layout_class_hour"
+                    app:layout_constraintLeft_toLeftOf="parent" />
 
-            <RelativeLayout
-                android:id="@+id/audio_play_layout_lecturer_layout"
+                <TextView
+                    android:id="@+id/audio_play_layout_vip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:text="VIP"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="63px"
+                    android:gravity="center"
+                    android:background="@drawable/list_info_vip_corner"
+                    app:layout_constraintLeft_toRightOf="@+id/audio_play_layout_name"
+                    app:layout_constraintBaseline_toBaselineOf="@+id/audio_play_layout_name"
+                    />
+
+                <TextView
+                    android:id="@+id/audio_play_layout_class_hour"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:gravity="center_vertical"
+                    android:text="3课时"
+                    android:textColor="#FFB0B0B0"
+                    android:textSize="14dp"
+                    android:layout_marginRight="10dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintRight_toLeftOf="@+id/audio_play_layout_practice_number"/>
+
+                <TextView
+                    android:id="@+id/audio_play_layout_practice_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:layout_marginRight="16dp"
+                    android:gravity="center_vertical"
+                    android:text="24.3万人练习"
+                    android:textColor="#FFB0B0B0"
+                    android:textSize="14dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"/>
+
+                <TextView
+                    android:id="@+id/audio_play_layout_description"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="10dp"
+                    android:text="爱自己冥想，由XXX提供"
+                    android:textColor="#FFB0B0B0"
+                    android:textSize="49px"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/audio_play_layout_name" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
                 android:layout_marginTop="10dp"
+                android:layout_marginLeft="14dp"
+                android:layout_marginRight="14dp"
                 android:layout_marginBottom="10dp"
-                app:layout_constraintTop_toBottomOf="@+id/audio_play_layout_view">
+                app:layout_constraintTop_toBottomOf="@+id/audio_play_class_info_layout"
+                android:background="@drawable/list_info_layout_corner">
 
-                <ImageView
-                    android:id="@+id/audio_play_layout_lecturer_photo"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="@mipmap/ic_launcher" />
-
-                <TextView
-                    android:id="@+id/audio_play_layout_lecturer_name"
-                    android:layout_width="wrap_content"
+                <RelativeLayout
+                    android:id="@+id/audio_play_layout_lecturer_layout"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignLeft="@+id/audio_play_layout_lecturer_photo"
-                    android:layout_marginLeft="50dp"
-                    android:text="讲师名" />
+                    app:layout_constraintTop_toTopOf="parent">
 
-                <TextView
-                    android:id="@+id/audio_play_layout_lecturer_introduction"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignTop="@+id/audio_play_layout_lecturer_name"
-                    android:layout_marginLeft="50dp"
-                    android:layout_marginTop="20dp"
-                    android:text="讲师简介" />
-            </RelativeLayout>
+                    <ImageView
+                        android:id="@+id/audio_play_layout_lecturer_photo"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginBottom="16dp"
+                        android:background="@mipmap/ic_launcher" />
 
-            <View
-                android:id="@+id/audio_play_layout_view2"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginBottom="10dp"
-                android:background="@color/gray"
-                app:layout_constraintTop_toBottomOf="@+id/audio_play_layout_lecturer_layout" />
+                    <TextView
+                        android:id="@+id/audio_play_layout_lecturer_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignLeft="@+id/audio_play_layout_lecturer_photo"
+                        android:layout_marginLeft="70dp"
+                        android:layout_marginTop="16dp"
+                        android:text="讲师名"
+                        android:textColor="#FF262626"
+                        android:textSize="56px"/>
 
-            <com.android.fanxinli.ExtendedRecyclerView
-                android:id="@+id/audio_play_layout_recyclerview"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layout_constraintTop_toBottomOf="@+id/audio_play_layout_view2" />
+                    <TextView
+                        android:id="@+id/audio_play_layout_lecturer_introduction"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignLeft="@+id/audio_play_layout_lecturer_photo"
+                        android:layout_alignTop="@+id/audio_play_layout_lecturer_name"
+                        android:layout_marginLeft="70dp"
+                        android:layout_marginTop="30dp"
+                        android:text="讲师简介"
+                        android:textColor="#FFB0B0B0"
+                        android:textSize="49px"/>
+                </RelativeLayout>
+
+                <com.android.fanxinli.ExtendedRecyclerView
+                    android:id="@+id/audio_play_layout_recyclerview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="14dp"
+                    android:layout_marginRight="14dp"
+                    app:layout_constraintTop_toBottomOf="@+id/audio_play_layout_lecturer_layout" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.android.fanxinli.BounceZoomScrollView>
 
     <TextView
         android:id="@+id/audio_play_layout_play"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="48dp"
         android:layout_gravity="bottom"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginBottom="20dp"
-        android:background="@color/gray"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:layout_marginBottom="24dp"
+        android:textColor="#FFFFFFFF"
+        android:textSize="63px"
+        android:background="@drawable/list_info_start_corner"
         android:gravity="center"
         android:text="开始第一节" />
 </FrameLayout>

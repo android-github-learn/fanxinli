@@ -7,4 +7,5 @@
     <color name="white">#ffffff</color>
     <color name="time_bg_color">#F5F5F5</color>
     <color name="timer_number_color">#F75A59</color>
+    <color name="play_seekbar">#FF659DF6</color>
 </resources>
